@@ -11,7 +11,7 @@ from mysql.connector import Error
 def connect_to_database():
     connection = None
     try:
-        connection = mysql.connector.connect_to_database(
+        connection = mysql.connector.connect(
             host='127.0.0.1',
             port='3306',
             database='projpy',
