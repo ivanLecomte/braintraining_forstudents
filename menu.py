@@ -5,11 +5,13 @@ le 05.12.23
 """
 import tkinter as tk
 from tkinter import ttk
-import geo01, info02, info05
-import datetime, database, results
+import geo01, info02, info05, database, results
+import datetime
 import tkinter.messagebox as messagebox
 from tkinter import StringVar
 from tkinter.ttk import Combobox
+import hashlib
+
 
 window = tk.Tk()
 window_width = 1200
@@ -24,6 +26,90 @@ rgb_color = (139, 201, 194)
 hex_color = '#%02x%02x%02x' % rgb_color
 window.configure(bg=hex_color)
 window.grid_columnconfigure((0, 1, 2), minsize=300, weight=1)
+
+
+
+
+
+
+
+def connect_user_window():
+    login_window_width = 400
+    login_window_height = 200
+    login_window = tk.Toplevel(window)
+    login_window.title("Connexion")
+    login_window.geometry(f'{login_window_width}x{login_window_height}+{center_x}+{center_y}')
+
+    # Déplacer la déclaration des Entry ici
+    entry_username = tk.Entry(login_window, width=30)
+    entry_username.grid(row=0, column=1, padx=10, pady=10)
+    label_username = tk.Label(login_window, text="Nom d'utilisateur:")
+    label_username.grid(row=0, column=0, padx=10, pady=10)
+
+    entry_password = tk.Entry(login_window, width=30, show="*")
+    entry_password.grid(row=1, column=1, padx=10, pady=10)
+    label_password = tk.Label(login_window, text="Mot de passe:")
+    label_password.grid(row=1, column=0, padx=10, pady=10)
+
+    btn_cancel = tk.Button(login_window, text="Annuler", command=login_window.destroy)
+    btn_cancel.grid(row=2, column=0, pady=10)
+    btn_login = tk.Button(login_window, text="Connexion", command=lambda: database.log_user(entry_username, entry_password))
+    btn_login.grid(row=2, column=1, pady=10)
+    btn_new_acc = tk.Button(login_window, text="Créer un compte", command=lambda: create_account_window())
+    btn_new_acc.grid(row=3, column=0, pady=10)
+
+
+def create_account_window():
+    new_acc_window_width = 400
+    new_acc_window_height = 200
+    new_acc_window = tk.Toplevel(window)
+    new_acc_window.title("Créer un nouveau compte")
+    new_acc_window.geometry(f'{new_acc_window_width}x{new_acc_window_height}+{center_x}+{400}')
+
+    # Déplacer la déclaration des Entry ici
+    entry_username = tk.Entry(new_acc_window, width=30)
+    entry_username.grid(row=0, column=1, padx=10, pady=10)
+    label_username = tk.Label(new_acc_window, text="Nom d'utilisateur:")
+    label_username.grid(row=0, column=0, padx=10, pady=10)
+
+    entry_password = tk.Entry(new_acc_window, width=30, show="*")
+    entry_password.grid(row=1, column=1, padx=10, pady=10)
+    label_password = tk.Label(new_acc_window, text="Mot de passe:")
+    label_password.grid(row=1, column=0, padx=10, pady=10)
+
+    btn_cancel = tk.Button(new_acc_window, text="Annuler", command=new_acc_window.destroy)
+    btn_cancel.grid(row=2, column=0, pady=10)
+    btn_login = tk.Button(new_acc_window, text="Créer", command=lambda: create_new_acc)
+    btn_login.grid(row=2, column=1, pady=10)
+
+
+    def password_encrypt(user_password):
+        password_encrypted = hashlib.sha256(user_password.encode()).hexdigest()
+        return password_encrypted
+
+
+
+    def create_new_acc():
+        # Validation des champs après que l'utilisateur ait eu la possibilité de saisir des valeurs
+        user_username = str(entry_username.get())
+        user_password = entry_password.get()
+
+        if not user_username or not user_password:
+            tk.messagebox.showerror("Erreur", "Veuillez remplir tous les champs.")
+            return
+        if len(user_username) < 4 or len(user_username) > 20 or len(user_password) < 4 or len(user_password) > 30:
+            tk.messagebox.showerror("""Entrez un nom d'utilisateur entre 4 et 20 caractères
+                                    Entrez un mot de passe entre 4 et 30 caractères""")
+            return
+        
+        hashed_password = password_encrypt(user_password)
+        database.insert_new_acc_data(user_username, hashed_password)
+
+            
+
+
+
+
 
 
 a_exercise = ["geo01", "info02", "info05"]
@@ -54,6 +140,9 @@ for ex in range(len(a_exercise)):
 
 btn_display = tk.Button(window, text="Afficher les résultats", font=("Arial", 15), command=lambda: results.display_result(window))
 btn_display.grid(row=1 + 2 * len(a_exercise) // 3, column=1)
+
+btn_display = tk.Button(window, text="Se connecter", font=("Arial", 15), command=lambda: connect_user_window())
+btn_display.grid(row=0, column=2, sticky="NE", padx=20, pady=20)
 
 
 window.mainloop()

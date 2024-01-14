@@ -7,6 +7,9 @@ Projet DBPY
 
 import mysql.connector
 from mysql.connector import Error
+import tkinter as tk
+import tkinter.messagebox as messagebox
+import hashlib
 
 def connect_to_database():
     connection = None
@@ -26,7 +29,6 @@ def connect_to_database():
     except Error as e:
         print(f"Problème de connexion avec la base de données: {e}")
         return None
-
     return connection
 
 
@@ -422,3 +424,61 @@ def get_all_games():
             print("Connexion à la base de données fermée")
 
 
+def insert_new_acc_data(username, password):
+    try:
+        connection = connect_to_database()
+        if connection:
+            cursor = connection.cursor()
+
+            # Utilisez des guillemets doubles autour des valeurs de chaîne dans la requête SQL
+            query = f"INSERT INTO players (pseudo, password) VALUES ('{username}', '{password}')"
+            
+            cursor.execute(query)
+            connection.commit()
+
+            print(f"Données du nouveau compte insérées avec succès pour l'utilisateur '{username}'")
+
+    except Error as e:
+        print(f"Erreur lors de l'insertion des données du nouveau compte : {e}")
+
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+            print("Connexion à la base de données fermée")
+
+
+def log_user(username, password):
+        try:
+            connection = connect_to_database()
+            if connection:
+                cursor = connection.cursor(dictionary=True)
+
+                # Récupérer le mot de passe haché de l'utilisateur dans la base de données
+                cursor.execute(f"SELECT id, pseudo, password FROM players WHERE pseudo = '{username}'")
+                user_data = cursor.fetchone()
+
+                if user_data:
+                    user_id = user_data['id']
+                    stored_password = user_data['password']
+
+                    # Hasher le mot de passe fourni par l'utilisateur pour le comparer avec celui stocké
+                    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+
+                    if hashed_password == stored_password:
+                        print(f"Utilisateur '{username}' connecté avec succès. ID: {user_id}")
+                        return user_id
+                    else:
+                        print(f"Mot de passe incorrect pour l'utilisateur '{username}'")
+
+                else:
+                    print(f"L'utilisateur '{username}' n'existe pas dans la base de données.")
+
+        except Error as e:
+            print(f"Erreur lors de la connexion de l'utilisateur : {e}")
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+                print("Connexion à la base de données fermée")
