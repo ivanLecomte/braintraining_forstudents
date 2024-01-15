@@ -423,22 +423,22 @@ def get_all_games():
             connection.close()
             print("Connexion à la base de données fermée")
 
-
+#Function that insert the input of the new user data in the database
 def insert_new_acc_data(username, password):
     try:
-        connection = connect_to_database()
+        connection = connect_to_database()#Firstly, tries to connect with database
         if connection:
             cursor = connection.cursor()
 
-            # Vérifier si l'utilisateur existe déjà dans la base de données
+            #Check if the user given is already in the database or not by counting the number of result ( 0 = no user with this username, 1 = already an user with the username, 2 = impossible because the case is set as unique)
             cursor.execute(f"SELECT COUNT(*) FROM players WHERE pseudo = '{username}'")
             user_count = cursor.fetchone()[0]
-
+            #if 1 it means the user is already existing so -> error
             if user_count > 0:
                 print(f"L'utilisateur avec le nom d'utilisateur '{username}' existe déjà.")
                 return
-
-            # Si l'utilisateur n'existe pas, procéder à l'insertion
+            
+            #If the code arrives here it means user count was 0, so no user, then we can insert the data into the table, but first we hash the password because we do not wanter raw password in database
             hashed_password = hashlib.sha256(password.encode()).hexdigest()
             query = f"INSERT INTO players (pseudo, password) VALUES ('{username}','{hashed_password}')"
             cursor.execute(query)
