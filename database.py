@@ -430,13 +430,21 @@ def insert_new_acc_data(username, password):
         if connection:
             cursor = connection.cursor()
 
-            # Utilisez des guillemets doubles autour des valeurs de chaîne dans la requête SQL
-            query = f"INSERT INTO players (pseudo, password) VALUES ('{username}', '{password}')"
-            
+            # Vérifier si l'utilisateur existe déjà dans la base de données
+            cursor.execute(f"SELECT COUNT(*) FROM players WHERE pseudo = '{username}'")
+            user_count = cursor.fetchone()[0]
+
+            if user_count > 0:
+                print(f"L'utilisateur avec le nom d'utilisateur '{username}' existe déjà.")
+                return
+
+            # Si l'utilisateur n'existe pas, procéder à l'insertion
+            hashed_password = hashlib.sha256(password.encode()).hexdigest()
+            query = f"INSERT INTO players (pseudo, password) VALUES ('{username}','{hashed_password}')"
             cursor.execute(query)
             connection.commit()
 
-            print(f"Données du nouveau compte insérées avec succès pour l'utilisateur '{username}'")
+            print(f"Données du nouveau compte insérées avec succès pour l'utilisateur: '{username}'")
 
     except Error as e:
         print(f"Erreur lors de l'insertion des données du nouveau compte : {e}")
@@ -467,12 +475,14 @@ def log_user(username, password):
 
                     if hashed_password == stored_password:
                         print(f"Utilisateur '{username}' connecté avec succès. ID: {user_id}")
-                        return user_id
+                        return True, user_id
                     else:
                         print(f"Mot de passe incorrect pour l'utilisateur '{username}'")
+                        return False
 
                 else:
                     print(f"L'utilisateur '{username}' n'existe pas dans la base de données.")
+                    return False
 
         except Error as e:
             print(f"Erreur lors de la connexion de l'utilisateur : {e}")
@@ -482,3 +492,7 @@ def log_user(username, password):
                 cursor.close()
                 connection.close()
                 print("Connexion à la base de données fermée")
+
+
+#insert_new_acc_data("ivan", "1234")
+#log_user("ivan", "1234")

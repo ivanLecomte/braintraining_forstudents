@@ -27,12 +27,6 @@ hex_color = '#%02x%02x%02x' % rgb_color
 window.configure(bg=hex_color)
 window.grid_columnconfigure((0, 1, 2), minsize=300, weight=1)
 
-
-
-
-
-
-
 def connect_user_window():
     login_window_width = 400
     login_window_height = 200
@@ -51,9 +45,12 @@ def connect_user_window():
     label_password = tk.Label(login_window, text="Mot de passe:")
     label_password.grid(row=1, column=0, padx=10, pady=10)
 
+    user_suername = entry_username.get()
+    user_password = entry_password.get()
+
     btn_cancel = tk.Button(login_window, text="Annuler", command=login_window.destroy)
     btn_cancel.grid(row=2, column=0, pady=10)
-    btn_login = tk.Button(login_window, text="Connexion", command=lambda: database.log_user(entry_username, entry_password))
+    btn_login = tk.Button(login_window, text="Connexion", command=lambda: database.log_user(user_suername, user_password))
     btn_login.grid(row=2, column=1, pady=10)
     btn_new_acc = tk.Button(login_window, text="Créer un compte", command=lambda: create_account_window())
     btn_new_acc.grid(row=3, column=0, pady=10)
@@ -77,40 +74,14 @@ def create_account_window():
     label_password = tk.Label(new_acc_window, text="Mot de passe:")
     label_password.grid(row=1, column=0, padx=10, pady=10)
 
+    user_suername = entry_username.get()
+    user_password = entry_password.get()
+
     btn_cancel = tk.Button(new_acc_window, text="Annuler", command=new_acc_window.destroy)
     btn_cancel.grid(row=2, column=0, pady=10)
-    btn_login = tk.Button(new_acc_window, text="Créer", command=lambda: create_new_acc)
+    btn_login = tk.Button(new_acc_window, text="Créer", command=lambda: database.insert_new_acc_data(user_suername, user_password))
     btn_login.grid(row=2, column=1, pady=10)
-
-
-    def password_encrypt(user_password):
-        password_encrypted = hashlib.sha256(user_password.encode()).hexdigest()
-        return password_encrypted
-
-
-
-    def create_new_acc():
-        # Validation des champs après que l'utilisateur ait eu la possibilité de saisir des valeurs
-        user_username = str(entry_username.get())
-        user_password = entry_password.get()
-
-        if not user_username or not user_password:
-            tk.messagebox.showerror("Erreur", "Veuillez remplir tous les champs.")
-            return
-        if len(user_username) < 4 or len(user_username) > 20 or len(user_password) < 4 or len(user_password) > 30:
-            tk.messagebox.showerror("""Entrez un nom d'utilisateur entre 4 et 20 caractères
-                                    Entrez un mot de passe entre 4 et 30 caractères""")
-            return
-        
-        hashed_password = password_encrypt(user_password)
-        database.insert_new_acc_data(user_username, hashed_password)
-
-            
-
-
-
-
-
+    print(user_suername, user_password)
 
 a_exercise = ["geo01", "info02", "info05"]
 albl_image = [None, None, None]  # Label (with images) array
