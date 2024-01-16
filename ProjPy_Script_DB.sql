@@ -21,19 +21,18 @@ CREATE TABLE IF NOT EXISTS `ProjPy`.`game` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `gameCode` VARCHAR(6) NOT NULL,
   PRIMARY KEY (`id`))
-ENGINE = INNODB;
+ENGINE = InnoDB;
 
-INSERT INTO `game` (`id`, `gameCode`) VALUES (10, 'GEO01');
-INSERT INTO `game` (`id`, `gameCode`) VALUES (11, 'INFO02');
-INSERT INTO `game` (`id`, `gameCode`) VALUES (12, 'INFO05');
 
 -- -----------------------------------------------------
 -- Table `ProjPy`.`players`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ProjPy`.`players` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `pseudo` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`))
+  `pseudo` VARCHAR(20) NOT NULL,
+  `password` VARCHAR(64) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `pseudo_UNIQUE` (`pseudo` ASC) VISIBLE)
 ENGINE = InnoDB;
 
 
@@ -61,7 +60,13 @@ CREATE TABLE IF NOT EXISTS `ProjPy`.`gameplay` (
     REFERENCES `ProjPy`.`players` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = INNODB;
+
+-- Listage des données de la table projpy.game : ~3 rows (environ)
+INSERT INTO `game` (`id`, `gameCode`) VALUES
+	(10, 'GEO01'),
+	(11, 'INFO02'),
+	(12, 'INFO05');
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

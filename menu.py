@@ -1,11 +1,11 @@
 """
 Ivan Lecomte
 Projet DBPY
-le 15.01.24
+le 16.01.2024
 """
 import tkinter as tk
 from tkinter import ttk
-import geo01, info02, info05, database, results
+import geo01, info02, info05, database, results, register
 import datetime
 import tkinter.messagebox as messagebox
 from tkinter import StringVar
@@ -47,15 +47,15 @@ def connect_user_window():
     label_password = tk.Label(login_window, text="Mot de passe:")
     label_password.grid(row=1, column=0, padx=10, pady=10)
 
-    #To get the info the user has given if not they ll appear as TopLeve Entry (Error)
+    #To get the info the user has given if not they ll appear as TopLevel Entry (Error)
     user_username = entry_username.get()
     user_password = entry_password.get()
 
     #His command destroy the window if the user want to comeback
     btn_cancel = tk.Button(login_window, text="Annuler", command=login_window.destroy)
     btn_cancel.grid(row=2, column=0, pady=10)
-    #Log_user tries to see if infos from user match with the ones from database, parameters are from the get above (user infos)
-    btn_login = tk.Button(login_window, text="Connexion", command=lambda: database.log_user(user_username, user_password))
+    #Log_user tries to see if infos from user match with the ones from register, parameters are from the get above (user infos)
+    btn_login = tk.Button(login_window, text="Connexion", command=lambda: register.log_user(user_username, user_password))
     btn_login.grid(row=2, column=1, pady=10)
     #His command switch to another window that allows to insert infos in the database(create an account) instead of comparing with existing datas
     btn_new_acc = tk.Button(login_window, text="Créer un compte", command=lambda: create_account_window())
@@ -89,7 +89,7 @@ def create_account_window():
     btn_cancel = tk.Button(new_acc_window, text="Annuler", command=new_acc_window.destroy)
     btn_cancel.grid(row=2, column=0, pady=10)
     #insert_new_acc_data function from database file tries to insert the data from user as a new line in the database, parameters are the infos from user we got some line above
-    btn_login = tk.Button(new_acc_window, text="Créer", command=lambda: database.insert_new_acc_data(user_username, user_password))
+    btn_login = tk.Button(new_acc_window, text="Créer", command=lambda: register.insert_new_acc_data(user_username, user_password))
     btn_login.grid(row=2, column=1, pady=10)
 
 a_exercise = ["geo01", "info02", "info05"]
