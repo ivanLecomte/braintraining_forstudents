@@ -47,15 +47,11 @@ def connect_user_window():
     label_password = tk.Label(login_window, text="Mot de passe:")
     label_password.grid(row=1, column=0, padx=10, pady=10)
 
-    #To get the info the user has given if not they ll appear as TopLevel Entry (Error)
-    user_username = entry_username.get()
-    user_password = entry_password.get()
-
     #His command destroy the window if the user want to comeback
     btn_cancel = tk.Button(login_window, text="Annuler", command=login_window.destroy)
     btn_cancel.grid(row=2, column=0, pady=10)
     #Log_user tries to see if infos from user match with the ones from register, parameters are from the get above (user infos)
-    btn_login = tk.Button(login_window, text="Connexion", command=lambda: register.log_user(user_username, user_password))
+    btn_login = tk.Button(login_window, text="Connexion", command=lambda: register.log_user(entry_username.get(), entry_password.get()))#To get the info the user has given if not they ll appear as TopLevel Entry (Error)
     btn_login.grid(row=2, column=1, pady=10)
     #His command switch to another window that allows to insert infos in the database(create an account) instead of comparing with existing datas
     btn_new_acc = tk.Button(login_window, text="Créer un compte", command=lambda: create_account_window())
